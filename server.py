@@ -15,7 +15,7 @@ def log_request_info():
 def upload_image():
 
     if request.method == "POST": #if we make a post request to the endpoint, look for the image in the request body
-        image_raw_bytes = request.get_data()  #get the whole body
+        image_raw_bytes = request.get_data()  
 
         current_datetime = datetime.datetime.now()
         file_name = current_datetime.strftime("%m-%d-%H-%M-%S")
