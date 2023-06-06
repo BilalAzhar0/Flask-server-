@@ -5,7 +5,7 @@ import datetime
 
 app = Flask(__name__)
 
-logging.basicConfig(level=logging.DEBUG) #for better debuging, we will log out every request with headers and body.
+logging.basicConfig(level=logging.DEBUG) #log out every request with headers and body.
 @app.before_request
 def log_request_info():
     logging.info('Headers: %s', request.headers)
@@ -14,21 +14,33 @@ def log_request_info():
 @app.route("/upload", methods=["POST"])
 def upload_image():
 
-    if request.method == "POST": #if we make a post request to the endpoint, look for the image in the request body
+    if request.method == "POST":
+        filename = request.headers.get("Filename")
         image_raw_bytes = request.get_data()  
 
-        current_datetime = datetime.datetime.now()
-        file_name = current_datetime.strftime("%m-%d-%H-%M-%S")
-        save_location = os.path.join(app.root_path, "received", file_name)
-        #save_location = (os.path.join(app.root_path, "received/test.jpg")) #save to the same folder as the flask app live in
-        
-        f = open(save_location, 'wb') # wb for write byte data in the file instead of string
-        f.write(image_raw_bytes) #write the bytes from the request body to the file
-        f.close()
+        if filename:
+            save_location = os.path.join(app.root_path, "received", filename)
+            f = open(save_location, 'wb')
+            f.write(image_raw_bytes)
+            f.close()
+            print("Image saved:", filename)
+            return "Image saved: " + filename
+        else:
+            return "Filename not provided"
 
-        print("Image saved")
 
-        return "image saved"
+
+
+
+
+
+    #    save_location = os.path.join(app.root_path, "received", header_string)
+   #     f = open(save_location, 'wb') 
+  #      f.write(image_raw_bytes) 
+
+ #       print("Image saved")
+
+#        return "image saved"
 
 if __name__ == '__main__':
     print("Flask server starting...")
